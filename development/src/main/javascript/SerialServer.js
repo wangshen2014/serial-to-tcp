@@ -1,128 +1,136 @@
 var net=require('net');
-var serialPort = require("serialport").SerialPort
+var serialport = require("serialport");
+var events = require( "events" );
+var util = require("util");
 
-var monitoring=false;
-var argumentsOffset=2;
-
-if (process.argv[2]=="-monitor"){
-	monitoring=true;
-}
-
-var SERIAL_PORT=process.argv[argumentsOffset];
-var BAUDRATE = process.argv[argumentsOffset+1];
-var PORT = process.argv[argumentsOffset+2]
-
-var ASCII = "ASCII";
-
-if (BAUDRATE){
-	BAUDRATE = parseInt(BAUDRATE);
-} else {
-	BAUDRATE=9600;
-}
-
-var COPYRIGHT="Serial to TCP server.\nCopyright© 2012 by Daan Kets (Blackbit Consulting)\nLicensed under the Apache 2.0 license."
-
-console.info(COPYRIGHT);
-
-var serialServer = net.createServer();
-// serialServer.maxConnections=1;
-
-var currentPort;
-
-
-
-serialServer.on("listening",function(){
-	console.info("Server listening on port "+PORT+". Press Ctrl-C (SIGINT) to terminate.");
-});
-
-var connections=new Array();
-var firstConnection;
-
-connections.add=function(connection){
-	if (this.contains(connection)) return false;
-	this.push(connection);
-	if (!firstConnection){
-		first(connection);
-	}
-	return true;
-}
-
-function first(connection){
-	firstConnection = connection;
-	console.log("Setting first connection to "+connection+"…");
-	if (firstConnection){		
-		firstConnection.on("data",function(data){
-		
-			if (monitoring){
-				console.log("TCP->SER: " + data);
-			}
-			
-			currentPort.write(data,ASCII);
-		})
-	}
+var SerialServer = function(pathToSerialPort, baudrate, tcpPortNumber){
+	// events.EventEmitter.call(this);
 	
-}
-
-connections.contains=function(connection){
-	for(var i=0; i<this.length; i++) {
-		console.log("Connection found at index "+i);
-        if (this[i] == connection) return i;
-    }
-    return null;
-}
-
-connections.remove=function(connection){
-	console.log("Finding connection…");
-	var index = this.contains(connection);
-	if (index!=null){
-		console.log("Removing connection…");
-		this.splice(index,1);
-		if(firstConnection == connection){
-			if (this.length>=1){
-				first(this[0]);				
-			} else {
-				first(null);
-			}
+	this.baudrate=baudrate;
+	this.pathToSerialPort=pathToSerialPort;
+	this.tcpPortNumber=tcpPortNumber;
+	this.connections=new Array();
+	this.connections.serialServer=this;
+	this.connections.first=null;
+	
+	this.connections.add=function(connection){
+		if (this.contains(connection)) return false;
+		this.push(connection);
+		if (!this.first){
+			this.setFirst(connection);
 		}
-		console.log("Connection removed.");
 		return true;
 	}
-	return false;
-}
-
-var	currentPort = new serialPort(SERIAL_PORT,{baudrate:BAUDRATE});	
-// currentPort.setEncoding(ASCII);	
-console.info("Opened serial port "+SERIAL_PORT + " with baudrate "+BAUDRATE+".");
-
-currentPort.on("data",function(data){
-	connections.forEach(function(connection){
-		if (monitoring){
-			console.log("SER->TCP: " + data);
-		}
-		try {
-			connection.write(data,ASCII);
-		} catch (exception){
-			
-		}
-	});
-});
-
-currentPort.onEnd=function(){
-	console.log("Serial port stream ended.");
-}
-currentPort.on("end",currentPort.onEnd);
-
-currentPort.onClose=function(){
-	console.log("Serial port "+SERIAL_PORT+" closed.");
-	currentPort=null;
-};	
-currentPort.on("close",currentPort.onClose);
-
-serialServer.on("connection",function(connection) {
 	
-	connection.setEncoding(ASCII);
+	this.connections.setFirst=function(connection){
+		this.first = connection;
+		console.log("Setting first connection to "+connection+"…");
+		if (this.first){		
+			this.first.on("data",function(data){			
+				this.serialServer.emit("out",data);
+				this.serialServer.currentPort.write(data,ENCODING);
+			})
+		}
+		
+	}
+	
+	this.connections.contains=function(connection){
+		for(var i=0; i<this.length; i++) {
+			console.log("Connection found at index "+i);
+	        if (this[i] == connection) return i;
+	    }
+	    return null;
+	}
+	
+	this.connections.remove=function(connection){
+		console.log("Finding connection…");
+		var index = this.contains(connection);
+		if (index!=null){
+			console.log("Removing connection…");
+			this.splice(index,1);
+			if(this.first == connection){
+				if (this.length>=1){
+					this.setFirst(this[0]);				
+				} else {
+					this.setFirst(null);
+				}
+			}
+			console.log("Connection removed.");
+			return true;
+		}
+		return false;
+	}
+
+	this.start=function(){
+		this.emit("starting");
+		this.currentPort = new serialport.SerialPort(this.pathToSerialPort,{baudrate:this.baudrate});
+		console.info("Opened serial port "+this.pathToSerialPort + " with baudrate "+this.baudrate+".");
+		
+		this.currentPort.serialServer=this;
+		
+		this.currentPort.onData=onSerialData;
+		this.currentPort.on("data",this.currentPort.onData);
+		
+		this.currentPort.onEnd=function(){
+			console.log("Serial port stream ended.");
+		}
+		this.currentPort.on("end",this.currentPort.onEnd);
+		
+		this.currentPort.onClose=function(){
+			console.log("Serial port "+SERIAL_PORT+" closed.");
+			this.serialServer.currentPort=null;
+		};	
+		this.currentPort.on("close",this.currentPort.onClose);
+
+		
+		this.tcpServer=net.createServer();
+		this.tcpServer.serialServer = this;
+		
+		var self = this;
+		this.tcpServer.on("listening",function(){
+			console.log("TCP/ip server listening on port "+self.tcpPortNumber);
+			self.emit("started");
+		});		
+		
+		this.tcpServer.onConnection=onTCPConnection;
+		this.tcpServer.on("connection",this.tcpServer.onConnection);
+		
+		this.tcpServer.listen(this.tcpPortNumber);
+	}
+	
+	this.stop=function(){
+		this.emit("closing");
+		this.tcpServer.on("close",function(){
+			console.log("TCP/ip server stopped.");
+		});
+		this.tcpServer.close();
+		this.emit("closed");
+	}
+	
+}
+
+SerialServer.prototype=new events.EventEmitter;
+
+var ENCODING = "utf8";
+var COPYRIGHT="Serial to TCP server.\nCopyright© 2012 by Daan Kets (Blackbit Consulting)\nLicensed under the Apache 2.0 license."
+console.info(COPYRIGHT);
+	
+
+function onSerialData(data){
+	this.serialServer.connections.forEach(function(connection){
+		connection.serialServer.emit("in",data);
+		try {
+			connection.write(data,ENCODING);
+		} catch (exception){}
+	});
+}
+
+function onTCPConnection(connection) {	
+	connection.setEncoding(ENCODING);
+	connection.serialServer=this.serialServer;
+	
 	console.info('Incoming connection from ' + connection.remoteAddress +':' + connection.remotePort );
-	connections.add(connection);
+	this.serialServer.connections.add(connection);
 	
 	connection.onClose=function(data) {
 		console.log("Socket from " + this.remoteAddress+":"+this.remotePort + " closed.");
@@ -132,7 +140,7 @@ serialServer.on("connection",function(connection) {
 	connection.onEnd=function(){
 		console.log("Socket stream ended.");
 		var self=this;
-		process.nextTick(function(){connections.remove(self)});
+		process.nextTick(function(){self.serialServer.connections.remove(self)});
 	};	
 	connection.on("end",connection.onEnd);	
 	
@@ -140,25 +148,6 @@ serialServer.on("connection",function(connection) {
 		console.error("Error with connection.");
 	});
 	
-});
-
-serialServer.on("close",function(){
-	console.log("Server stopped listening.")
-});
-
-process.on('SIGINT', function () {
-	console.log("Received SIGINT.");
-	process.nextTick(terminate);  	
-});
-
-process.on('SIGTERM',function(){
-	console.log("Received SIGTERM.");
-	process.nextTick(terminate);
-});
-
-function terminate(){
-	console.info("Terminating server.");
-	process.exit(0);
 }
 
-serialServer.listen(PORT);
+module.exports.SerialServer=SerialServer;
