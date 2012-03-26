@@ -1,0 +1,23 @@
+2012-03-26
+==========
+
+First draft release for early testing.
+
+Features:
+	* Listening to a serial port
+	* Accepting multiple incoming connections
+	* Oldest connection has write permission to the port.
+	* Write permission is propagated to next connection upon closure of the connection that has
+	  current write permission.
+	* Terminates on Ctrl-C (SIGINT) or shutdown (SIGTERM).
+	* Takes path to the serial port, baudrate, tcp port number as command line arguments.
+	* -monitor option enables console monitoring.
+
+Fixes:
+	* N/A
+
+Usage:
+	* Enter the command line (with node js installed and on the path):
+		node serial-tcp-server.js [-<option>..] </path/to/serialPort> <baudrate> <tcpPortNumber>
+	* Options:
+		-monitor	Enabled monitoring of communications.
