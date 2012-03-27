@@ -10,6 +10,9 @@ var argumentsOffset=2;
 if (process.argv[2]=="-monitor"){
 	monitoring=true;
 	argumentsOffset=3;
+} else if (process.argv.length==2){
+	console.info("Usage: serialserver [-monitor] <pathToSerialPort> <baudrate> <tcpPortNumber>");
+	process.exit(0);
 }
 
 /*
