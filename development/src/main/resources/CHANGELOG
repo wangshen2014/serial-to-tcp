@@ -1,3 +1,21 @@
+0.1.3 (2012-03-27)
+==================
+
+Fixed NPM pacakge
+
+Fixes:
+	* Correctly specified node version
+	* The start script has been updated in order to detect the prefix/installation mode.
+
+0.1.2 (2012-03-27)
+==================
+
+First NPM package.
+
+Features:
+	* NPM pacakge.json
+	* NPM installable
+	
 2012-03-27
 ==========
 
