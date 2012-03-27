@@ -1,3 +1,15 @@
+2012-03-27
+==========
+
+Second draft release.
+
+Features:
+	* The build script creates a binary release including the serialport npm module.
+	* A batch file for running the tool on Windows platforms.
+
+Fixes:
+    * The build script handles spaces in directories correctly.
+
 2012-03-26
 ==========
 
