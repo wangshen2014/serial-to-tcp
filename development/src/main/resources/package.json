@@ -1,0 +1,39 @@
+{
+  "name": "serialserver",
+  "preferGlobal": "true",
+  "version": "0.1.2",
+  "author": "Daan Kets <daankets@blackbit.net>",
+  "description": "a serial port to tcp/ip server",
+  "contributors": [ 
+    {
+      "name": "Daan Kets",
+      "email": "daankets@blackbit.net"
+    } 
+  ],
+  "bin": {
+    "serialserver": "./bin/serialserver.sh"
+  },
+  "scripts": {
+    "start": "node ./bin/serialserver.sh",
+    "test": "vows --spec --isolate"
+  },
+  "main": "./lib/serialserver.js",
+  "repository": {
+    "type": "git",
+    "url": "https://code.google.com/p/serial-to-tcp"
+  },
+  "keywords": [
+    "cli",
+    "serial",
+    "tcp",
+    "server"
+  ],
+  "dependencies" : {
+    "serialport"   :  "0.7.x"
+  },
+  "noAnalyze": true,
+  "license": "Apache 2.0",
+  "engine": {
+    "node": "0.6.x"
+  }
+}
