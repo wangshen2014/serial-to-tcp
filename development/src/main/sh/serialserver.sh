@@ -21,4 +21,4 @@ else
 	fi
 fi
 
-node "$TARGET" $1 $2 $3 $4 $5
+node "$TARGET" $@

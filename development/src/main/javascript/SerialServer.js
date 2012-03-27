@@ -1,3 +1,9 @@
+/*
+ * Code from serial-to-tcp server in node js.
+ * Copyright© 2012 by Daan Kets (Blackbit Consulting, http://www.blackbit.be)
+ * Licensed under the Apache 2.0 license.
+ */
+
 var net=require('net');
 var serialport = require("serialport");
 var events = require( "events" );
@@ -113,7 +119,7 @@ var SerialServer = function(pathToSerialPort, baudrate, tcpPortNumber, interface
 SerialServer.prototype=new events.EventEmitter;
 
 var ENCODING = "utf8";
-var COPYRIGHT="Serial to TCP server.\nCopyright© 2012 by Daan Kets (Blackbit Consulting)\nLicensed under the Apache 2.0 license."
+var COPYRIGHT="Serial to TCP server (serialserver) 0.1.5.\nCopyright© 2012 by Daan Kets (Blackbit Consulting)\nLicensed under the Apache 2.0 license."
 console.info(COPYRIGHT);
 	
 

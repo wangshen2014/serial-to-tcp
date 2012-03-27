@@ -1,3 +1,9 @@
+/*
+ * Code from serial-to-tcp server in node js.
+ * Copyright© 2012 by Daan Kets (Blackbit Consulting, http://www.blackbit.be)
+ * Licensed under the Apache 2.0 license.
+ */
+
 var ascii = ["NUL","SOH","STX","ETX","EOT","ENQ","ACK","BEL","BS","TAB","LF","VT","FF","CR","SO","SI","DLE","DC1","DC2","DC3","DC4","NAK","SYN","ETB","CAN","EM","SUB","ESC","FS","GS","RS","US"];
 
 function asciiExpand(string){

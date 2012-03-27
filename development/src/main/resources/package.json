@@ -1,7 +1,7 @@
 {
   "name": "serialserver",
   "preferGlobal": "true",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "author": "Daan Kets <daankets@blackbit.net>",
   "description": "a serial port to tcp/ip server",
   "contributors": [ 
@@ -26,7 +26,9 @@
     "cli",
     "serial",
     "tcp",
-    "server"
+    "server",
+    "port",
+    "sharing"
   ],
   "dependencies" : {
     "serialport"   :  "0.7.x"

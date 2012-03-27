@@ -1,3 +1,19 @@
+0.1.5 (2012-03-27)
+==================
+
+Implemented a command line class, that will parse the arguments, and attach them to the
+matching attributes of the commandLine object. This way, we can support out of order named
+arguments, and easier use of arguments at run-time.
+
+Features:
+	* Command line parsing externalized into a separate class.
+	* Supports the -debug option, which will output some extra information.
+	* Supports the -noExpansion option, which will disable expansion of ascii strings.
+	* Supports the -help option, which will print usage and exit.
+	
+Fixes:
+	* Shell script uses $@ in order to pass-on all arguments from the shell.
+
 0.1.4 (2012-03-27)
 ==================
 
