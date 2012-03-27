@@ -3,12 +3,13 @@ var serialport = require("serialport");
 var events = require( "events" );
 var util = require("util");
 
-var SerialServer = function(pathToSerialPort, baudrate, tcpPortNumber){
+var SerialServer = function(pathToSerialPort, baudrate, tcpPortNumber, interface){
 	// events.EventEmitter.call(this);
 	
 	this.baudrate=baudrate;
 	this.pathToSerialPort=pathToSerialPort;
 	this.tcpPortNumber=tcpPortNumber;
+	this.interface=interface;
 	this.connections=new Array();
 	this.connections.serialServer=this;
 	this.connections.first=null;
@@ -95,7 +96,7 @@ var SerialServer = function(pathToSerialPort, baudrate, tcpPortNumber){
 		this.tcpServer.onConnection=onTCPConnection;
 		this.tcpServer.on("connection",this.tcpServer.onConnection);
 		
-		this.tcpServer.listen(this.tcpPortNumber);
+		this.tcpServer.listen(this.tcpPortNumber,this.interface);
 	}
 	
 	this.stop=function(){

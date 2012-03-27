@@ -1,5 +1,5 @@
 var serialserver=require("./serialserver.js");
-
+var asciistrings=require("./asciistrings.js");
 var monitoring=false;
 var argumentsOffset=2;
 
@@ -11,7 +11,7 @@ if (process.argv[2]=="-monitor"){
 	monitoring=true;
 	argumentsOffset=3;
 } else if (process.argv.length==2){
-	console.info("Usage: serialserver [-monitor] <pathToSerialPort> <baudrate> <tcpPortNumber>");
+	console.info("Usage: serialserver [-monitor] <pathToSerialPort> <baudrate> <tcpPortNumber> [<interface>]");
 	process.exit(0);
 }
 
@@ -21,6 +21,7 @@ if (process.argv[2]=="-monitor"){
 var serialPort=process.argv[argumentsOffset];
 var baudrate = process.argv[argumentsOffset+1];
 var tcpPortNumber = process.argv[argumentsOffset+2]
+var interface=process.argv[argumentsOffset+3];
 
 /*
  * Parse or initialize the baudrate.
@@ -31,10 +32,11 @@ if (baudrate){
 	baudrate=9600;
 }
 
+
 /*
  * Create an instance of the serial server.
  */
-var server = new serialserver.SerialServer(serialPort, baudrate, tcpPortNumber);
+var server = new serialserver.SerialServer(serialPort, baudrate, tcpPortNumber, interface);
 
 /**
  * Log when the server is started.
@@ -56,11 +58,11 @@ server.on("stopped",function(){
  */
 if (monitoring){
 	server.on("in",function(data){
-		console.info("IN : "+data.toString("utf8").replace("\n","<LF>").replace("\r","<CR>"));
+		console.info("IN : "+asciistrings.expand(data.toString("utf8")));
 	});
 
 	server.on("out",function(data){
-		console.info("OUT: "+data.replace("\n","<LF>").replace("\r","<CR>"));
+		console.info("OUT: "+asciistrings.expand(data));
 	});
 }
 

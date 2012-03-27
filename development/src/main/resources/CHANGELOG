@@ -1,3 +1,14 @@
+0.1.4 (2012-03-27)
+==================
+
+Added ascii expansion, and an option to specify the listening interface.
+
+Features:
+	* In monitoring mode, the serialserver will now expand ascii characters below 32 (space)
+	  to the corresponding character name within the ascii table. For example, the \0 character
+	  will be rendered as <NUL>.
+	* It's now possible to specify the listening interface as an optional argument.
+
 0.1.3 (2012-03-27)
 ==================
 
@@ -48,6 +59,6 @@ Fixes:
 
 Usage:
 	* Enter the command line (with node js installed and on the path):
-		node serial-tcp-server.js [-<option>..] </path/to/serialPort> <baudrate> <tcpPortNumber>
+		node serial-tcp-server.js [-<option>..] </path/to/serialPort> <baudrate> <tcpPortNumber> [<interface>]
 	* Options:
 		-monitor	Enabled monitoring of communications.
