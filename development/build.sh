@@ -1,17 +1,28 @@
 #!/bin/sh
 
-DIR=$(cd $(dirname "$0"); pwd)
-rm -Rf "$DIR/target"
+DIR=$(cd $(dirname $0); pwd)
+rm -Rf "$DIR"/target
 
-mkdir "$DIR/target"
-mkdir "$DIR/target/serialserver"
-mkdir "$DIR/target/serialserver/bin"
-mkdir "$DIR/target/serialserver/javascript"
+pushd "$DIR"
 
-cp "$DIR/src/main/javascript/*" "$DIR/target/serialserver/javascript/"
-cp "$DIR/src/main/sh/*" "$DIR/target/serialserver/bin/"
-cp "$DIR/src/main/resources/*" "$DIR/target/serialserver/"
+mkdir target/
+mkdir target/serialserver/
+mkdir target/serialserver/bin/
+mkdir target/serialserver/javascript/
 
-chmod 750 "$DIR/target/serialserver/bin/*"
+cp src/main/javascript/*.js target/serialserver/javascript/
+cp src/main/sh/* target/serialserver/bin/
+cp src/main/resources/* target/serialserver/
 
-tar -cvzf "$DIR/target/serialserver.tar.gz" "$DIR/target/serialserver/"
+chmod 750 target/serialserver/bin/*.sh
+
+
+pushd target
+pushd serialserver/javascript
+npm install serialport
+popd
+
+tar -cvzf serialserver.tar.gz serialserver/
+
+popd
+popd
