@@ -31,9 +31,9 @@
   "dependencies" : {
     "serialport"   :  "0.7.x"
   },
-  "noAnalyze": true,
+  "noAnalyze": false,
   "license": "Apache 2.0",
-  "engine": {
+  "engines": {
     "node": "0.6.x"
   }
 }
