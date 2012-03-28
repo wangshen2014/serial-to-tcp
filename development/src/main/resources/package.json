@@ -31,7 +31,8 @@
     "sharing"
   ],
   "dependencies" : {
-    "serialport"   :  "0.7.x"
+    "serialport"   :  "0.7.x",
+    "node-commandline": "0.1.x"
   },
   "noAnalyze": false,
   "license": "Apache 2.0",

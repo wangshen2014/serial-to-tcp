@@ -6,7 +6,7 @@
 
 var serialserver=require("./serialserver.js");
 var asciistrings=require("./asciistrings.js");
-var commandline=require("./commandline.js");
+var commandline=require("node-commandline");
 
 var commandLine=new commandline.CommandLine(process.argv,["serialPort","baudrate","tcpPortNumber","interface"]);
 

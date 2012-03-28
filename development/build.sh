@@ -19,7 +19,7 @@ chmod 750 target/serialserver/bin/*.sh
 
 pushd target
 pushd serialserver
-npm install serialport
+npm install
 popd
 
 tar -cvzf serialserver.tar.gz serialserver/
