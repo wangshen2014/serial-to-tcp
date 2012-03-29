@@ -35,7 +35,7 @@ var SerialServer = function(pathToSerialPort, baudrate, tcpPortNumber, interface
 		if (this.first){		
 			this.first.on("data",function(data){			
 				this.serialServer.emit("out",data);
-				this.serialServer.currentPort.write(data,ENCODING);
+				this.serialServer.currentPort.write(data);
 			})
 		}
 		
@@ -54,6 +54,7 @@ var SerialServer = function(pathToSerialPort, baudrate, tcpPortNumber, interface
 		var index = this.contains(connection);
 		if (index!=null){
 			console.log("Removing connection…");
+			connection.removeAllListeners('data');
 			this.splice(index,1);
 			if(this.first == connection){
 				if (this.length>=1){
@@ -106,19 +107,18 @@ var SerialServer = function(pathToSerialPort, baudrate, tcpPortNumber, interface
 	}
 	
 	this.stop=function(){
-		this.emit("closing");
+		this.emit("stopping");
 		this.tcpServer.on("close",function(){
 			console.log("TCP/ip server stopped.");
 		});
 		this.tcpServer.close();
-		this.emit("closed");
+		this.emit("stopped");
 	}
 	
 }
 
 SerialServer.prototype=new events.EventEmitter;
 
-var ENCODING = "utf8";
 var COPYRIGHT="Serial to TCP server (serialserver) 0.1.5.\nCopyright© 2012 by Daan Kets (Blackbit Consulting)\nLicensed under the Apache 2.0 license."
 console.info(COPYRIGHT);
 	
@@ -127,13 +127,13 @@ function onSerialData(data){
 	this.serialServer.connections.forEach(function(connection){
 		connection.serialServer.emit("in",data);
 		try {
-			connection.write(data,ENCODING);
+			connection.write(data);
 		} catch (exception){}
 	});
 }
 
 function onTCPConnection(connection) {	
-	connection.setEncoding(ENCODING);
+	// connection.setEncoding(ENCODING);
 	connection.serialServer=this.serialServer;
 	
 	console.info('Incoming connection from ' + connection.remoteAddress +':' + connection.remotePort );

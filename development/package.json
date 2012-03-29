@@ -1,7 +1,7 @@
 {
   "name": "serialserver",
   "preferGlobal": "true",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "author": "Daan Kets <daankets@blackbit.net>",
   "description": "a serial port to tcp/ip server",
   "contributors": [ 

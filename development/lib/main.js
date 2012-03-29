@@ -12,9 +12,16 @@ var commandLine=new commandline.CommandLine(process.argv,["serialPort","baudrate
 
 if (commandLine.orderedArguments.length<3 || commandLine.help){
 	console.info("Usage:");
-	console.info("  serialserver [-help] [-monitor] [-debug] [-noExpansion] <pathToSerialPort> <baudrate> <tcpPortNumber> [<interface>]");
+	console.info("  serialserver [-help] [-monitor[:{ascii|hex|true}]] [-debug] <pathToSerialPort> <baudrate> <tcpPortNumber> [<interface>]");
 	console.info("  - option names are case sensitive.");
-	console.info("  - options may be out of order.");
+	console.info("");
+	console.info("  - help   : prints this information.");
+	console.info("  - monitor: enabled monitoring mode.");
+	console.info("             * true (default)     = output in plain text");
+	console.info("             * ascii              = output in expanded ascii");
+	console.info("             * hex                = output in hexadecimal");
+	console.info("  - debug  : enables debug mode.");
+	
 	process.exit(0);
 }
 
@@ -24,6 +31,10 @@ if (commandLine.debug) console.info(JSON.stringify(commandLine));
  * Parse or initialize the baudrate.
  */
 var baudrate = parseInt(commandLine.baudrate);
+
+/*
+ * initialize the mode
+ */
 
 /*
  * Create an instance of the serial server.
@@ -50,18 +61,34 @@ server.on("stopped",function(){
  */
 if (commandLine.monitor){
 	server.on("in",function(data){
-		if (commandLine.noExpansion){
-			console.info("IN : "+data.toString("utf8"));
-		} else {
-			console.info("IN : "+asciistrings.expand(data.toString("utf8")));
+		
+		switch(commandLine.monitor){
+			case true:
+			default:
+				console.info("IN "+asciistrings.pad(data.length,"    ")+": "+data.toString("utf8"));
+				break;
+			case "hex":
+				console.info("IN "+asciistrings.pad(data.length,"    ")+": "+asciistrings.hex(data));
+				break;
+			case "ascii":
+				console.info("IN "+asciistrings.pad(data.length,"    ")+": "+asciistrings.expand(data));
+				break;
 		}
+			
 	});
 
 	server.on("out",function(data){
-		if (commandLine.noExpansion){
-			console.info("OUT: "+data);
-		} else {
-			console.info("OUT: "+asciistrings.expand(data));
+		switch(commandLine.monitor){
+			case true:
+			default:
+				console.info("OUT"+asciistrings.pad(data.length,"    ")+": "+data.toString("utf8"));
+				break;
+			case "hex":
+				console.info("OUT"+asciistrings.pad(data.length,"    ")+": "+asciistrings.hex(data));
+				break;
+			case "ascii":
+				console.info("OUT"+asciistrings.pad(data.length,"    ")+": "+asciistrings.expand(data));
+				break;			
 		}
 	});
 }

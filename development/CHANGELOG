@@ -1,3 +1,19 @@
+0.1.6 (2012-03-29)
+==================
+
+Refactorings and some extra monitoring features.
+
+Features:
+	* The monitor option now accepts the values {true,ascii,hex}. Hex mode will output
+	  all data in hex notation. Ascii mode will escape characters before space, and output
+	  hex for characters above 127.
+	* The noExpansion option was removed.
+	
+Fixes:
+	* The package now depends on the node-commandline package for command-line parsing.
+	* The package correctly works with octets (buffers) instead of utf-8 strings.
+	
+The monitor option now knows th
 0.1.5 (2012-03-27)
 ==================
 

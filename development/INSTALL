@@ -1,0 +1,14 @@
+Installation notes
+==================
+
+Install
+-------
+
+ * Install node 01.6.x or later
+ * Install the serialport package using the Node Package Manager:
+  * `sudo npm -g install serialport`
+
+Run
+---
+ * Use the following command:
+  * `serialserver [-help] [-monitor[:{ascii|hex|true}]] [-debug] <pathToSerialPort> <baudrate> <tcpPortNumber> [<interface>]`
